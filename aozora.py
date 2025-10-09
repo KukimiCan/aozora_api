@@ -47,7 +47,7 @@ try:
     df_aozora = pd.read_csv(
         csv_filepath,
         encoding='cp932',
-        usecols=['作品名', '姓', '名', 'XHTML/HTMLファイルURL']
+        usecols=['作品名', '作品著作権フラグ', '姓', '名', 'XHTML/HTMLファイルURL']
     ).dropna(subset=['XHTML/HTMLファイルURL'])
 except FileNotFoundError:
     df_aozora = None
@@ -89,6 +89,10 @@ def fetch_and_process_novel():
     
     try:
         novel_info = df_aozora.sample(n=1).iloc[0]
+
+        if novel_info['作品著作権フラグ'] == "あり":
+            return None
+
         base_url = "https://www.aozora.gr.jp/"
         relative_url = novel_info['XHTML/HTMLファイルURL']
         absolute_url = urljoin(base_url, relative_url.replace('../', ''))
